@@ -16,10 +16,10 @@ data_extracao = []
 patterns = {
     "ID": r"Nota Técnica (\d+)",
     "Data de Conclusão": r"Data de conclusão:\s*(.*)",
-    "Paciente Idade": r"Idade:\s*(\d+)",
+    "Idade": r"Idade:\s*(\d+)",
     "Sexo": r"Sexo:\s*(\w+)",
     "Cidade": r"Cidade:\s*(.*?)(?:/|\n)",
-    "Órgão Julgador": r"Esfera/Órgão:\s*(.*)",
+    "Órgão": r"Esfera/Órgão:\s*(.*)",
     "Serventia": r"Vara/Serventia:\s*(.*)",
     "CID": r"CID:\s*(.*)",
     "Diagnóstico": r"Diagnóstico:\s*(.*)",
