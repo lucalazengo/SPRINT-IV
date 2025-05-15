@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - e-NatJus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body class="bg-dark text-light">
+    <div class="container mt-5">
+        <h2>Dashboard Estatístico - Jurisprudências e-NatJus</h2>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card bg-secondary text-light">
+                    <div class="card-body">
+                        <h5>Total de Pareceres:</h5>
+                        <p>{{ total_pareceres }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card bg-secondary text-light">
+                    <div class="card-body">
+                        <h5>Distribuição por Conclusão:</h5>
+                        <ul>
+                            {% for key, value in distribuicao_conclusao.items() %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card bg-secondary text-light">
+                    <div class="card-body">
+                        <h5>Tecnologias mais julgadas:</h5>
+                        <ul>
+                            {% for key, value in distribuicao_tecnologia.items() %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card bg-secondary text-light">
+                    <div class="card-body">
+                        <h5>Principais Diagnósticos:</h5>
+                        <ul>
+                            {% for key, value in principais_diagnosticos.items() %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card bg-secondary text-light">
+                    <div class="card-body">
+                        <h5>Principais Serventias:</h5>
+                        <ul>
+                            {% for key, value in principais_serventias.items() %}
+                                <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/" class="btn btn-primary">Voltar para Pesquisa</a>
+        </div>
+    </div>
+</body>
+</html>

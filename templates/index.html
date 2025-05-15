@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Jurisprudência e-NatJus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body class="bg-dark text-light">
+    <div class="container mt-5">
+        <h2>Consulta de Jurisprudência - e-NatJus</h2>
+        <form method="POST">
+            <div class="input-group mb-3">
+                <input type="text" name="query" class="form-control" placeholder="Digite sua pergunta..." required>
+                <button class="btn btn-primary" type="submit">Pesquisar</button>
+            </div>
+        </form>
+
+        {% if resultados %}
+            <h4>Resultados para: "{{ query }}"</h4>
+            <ul class="list-group">
+            {% for resultado in resultados %}
+                <li class="list-group-item bg-secondary text-white mt-2">
+                    <strong>Diagnóstico:</strong> {{ resultado['diagnóstico'] }}<br>
+                    <strong>Justificativa:</strong> {{ resultado['conclusão'] }}<br>
+                    <strong>Conclusão:</strong> {{ resultado['conclusão justificada'] }}<br>
+                    <strong>CID:</strong> {{ resultado['cid'] }}<br>
+                    <strong>Princípio Ativo:</strong> {{ resultado['princípio ativo'] }}<br>
+                    <strong>Nome Comercial:</strong> {{ resultado['nome comercial'] }}<br>
+                    <strong>Tipo:</strong> {{ resultado['tipo da tecnologia'] }}<br>
+                    <strong>Órgão:</strong> {{ resultado['órgão'] }}<br>
+                    <strong>Serventia:</strong> {{ resultado['serventia'] }}<br>
+                    <strong>Referência:</strong> <a href="{{ resultado['referência'] }}" target="_blank">Visualizar Nota Técnica</a><br>
+                    <strong>Similaridade:</strong> {{ resultado['similaridade'] }}
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>
