@@ -4,25 +4,25 @@ import faiss
 import pickle
 from sentence_transformers import SentenceTransformer
 
-# 🚀 Carregar o modelo e os dados
+#  Carregar o modelo e os dados
 model = SentenceTransformer('all-mpnet-base-v2')
 dataset = pd.read_csv('./data/processed/DATASET_FINAL_EMBEDDINGS.csv')
 
-# 🚀 Carregar os embeddings e criar o índice
+# Carregar os embeddings e criar o índice
 with open('./data/processed/embeddings.pkl', 'rb') as f:
     embeddings = pickle.load(f)
 
-# ✅ Corrigido: Nome alterado para evitar conflito com Flask
+#  Corrigido: Nome alterado para evitar conflito com Flask
 embeddings = np.array(embeddings).astype('float32')
 faiss.normalize_L2(embeddings)
 
-# ✅ Índice atualizado para evitar conflito de nome
+#  Índice atualizado para evitar conflito de nome
 faiss_index = faiss.IndexFlatIP(embeddings.shape[1])
 faiss_index.add(embeddings)
 
-print(f"✅ Índice de busca criado com {faiss_index.ntotal} jurisprudências indexadas.")
+print(f" Índice de busca criado com {faiss_index.ntotal} jurisprudências indexadas.")
 
-# 🔎 Função de busca semântica
+#  Função de busca semântica
 def buscar_jurisprudencia(query, top_k=5):
     query_embedding = model.encode([query], normalize_embeddings=True)
     distances, indices = faiss_index.search(np.array(query_embedding).astype('float32'), top_k)
@@ -46,7 +46,7 @@ def buscar_jurisprudencia(query, top_k=5):
     
     return resultados
 
-# 🚀 Consultas de Validação
+#  Consultas de Validação
 consultas = [
     "Qual o entendimento sobre o uso de Canabidiol em Goiás?",
     "Qual o entendimento para a liberação de UTI para pacientes com câncer?",
@@ -55,7 +55,7 @@ consultas = [
     "Quais são os principais medicamentos liberados para doenças raras?"
 ]
 
-# 🚀 Execução dos Testes
+#  Execução dos Testes
 erros = []
 sucessos = []
 
@@ -65,7 +65,7 @@ for consulta in consultas:
     
     if not resultados:
         erros.append((consulta, "Nenhum resultado encontrado."))
-        print("❌ Nenhum resultado encontrado.")
+        print(" Nenhum resultado encontrado.")
         continue
     
     for resultado in resultados:
@@ -75,16 +75,16 @@ for consulta in consultas:
             erros.append((consulta, "Campos faltantes."))
         else:
             sucessos.append((consulta, resultado['diagnóstico'], resultado['referência']))
-            print(f"✅ Diagnóstico: {resultado['diagnóstico']}")
+            print(f" Diagnóstico: {resultado['diagnóstico']}")
             print(f"   Referência: {resultado['referência']}")
             print(f"   Similaridade: {resultado['similaridade']}")
 
-# 🚀 Relatório Final
+#  Relatório Final
 print("\n===== RELATÓRIO FINAL =====")
-print(f"✅ Consultas bem-sucedidas: {len(sucessos)}")
-print(f"❌ Consultas com erro: {len(erros)}")
+print(f" Consultas bem-sucedidas: {len(sucessos)}")
+print(f" Consultas com erro: {len(erros)}")
 
 if erros:
-    print("\n❌ Lista de Erros:")
+    print("\n Lista de Erros:")
     for erro in erros:
         print(f"- {erro[0]}: {erro[1]}")

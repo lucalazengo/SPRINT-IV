@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Histórico de Consultas - e-NatJus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body class="bg-dark text-light">
+    <div class="container mt-5">
+        <h2>Histórico de Consultas</h2>
+
+        {% if historico %}
+            <ul class="list-group mt-3">
+                {% for item in historico %}
+                    <li class="list-group-item bg-secondary text-white">
+                        <strong>Data:</strong> {{ item['Data'] }}<br>
+                        <strong>Pergunta:</strong> {{ item['Pergunta'] }}<br>
+                        <strong>Resposta:</strong> {{ item['Resposta'] }}<br>
+                        <strong>Tempo de Resposta:</strong> {{ item['Tempo de Resposta (s)'] }} segundos<br>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="mt-4">Nenhuma consulta realizada ainda.</p>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="/" class="btn btn-primary">Voltar ao Chat</a>
+        </div>
+    </div>
+</body>
+</html>

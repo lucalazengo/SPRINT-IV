@@ -1,10 +1,9 @@
 import os
 import pandas as pd
-import fitz  # PyMuPDF
+import fitz  
 import re
 from tqdm import tqdm
 
-# Caminhos
 base_dir = os.path.dirname(os.path.abspath(__file__))
 pdf_dir = os.path.join(base_dir, "../data/pdfs_notas_tecnicas_goias")
 output_csv = os.path.join(base_dir, "../data/processed/web_natjus_consolidado.csv")
@@ -66,9 +65,8 @@ def processar_pdfs():
 def salvar_csv():
     df = pd.DataFrame(data_extracao)
     df.to_csv(output_csv, index=False)
-    print(f"✅ Arquivo CSV gerado em: {output_csv}")
+    print(f" Arquivo CSV gerado em: {output_csv}")
 
-# Execução
 if __name__ == "__main__":
     processar_pdfs()
     salvar_csv()

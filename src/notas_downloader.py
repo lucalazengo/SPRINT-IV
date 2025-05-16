@@ -3,12 +3,10 @@ import requests
 import pandas as pd
 from tqdm import tqdm
 
-# Caminhos
 base_dir = os.path.dirname(os.path.abspath(__file__))
 output_dir = os.path.join(base_dir, "pdfs_notas_tecnicas_goias")
 csv_path = os.path.join(base_dir, "notas_tecnicas_goias.csv")
 
-# Criação do diretório se não existir
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
@@ -35,14 +33,13 @@ def download_pdfs():
                     with open(pdf_path, 'wb') as file:
                         for chunk in response.iter_content(chunk_size=1024):
                             file.write(chunk)
-                    print(f"✅ Download concluído: {nota_id}.pdf")
+                    print(f" Download concluído: {nota_id}.pdf")
                 else:
-                    print(f"❌ Falha no download: {nota_id}.pdf - Status {response.status_code}")
+                    print(f" Falha no download: {nota_id}.pdf - Status {response.status_code}")
             except Exception as e:
-                print(f"⚠️ Erro no download {nota_id}.pdf: {e}")
+                print(f" Erro no download {nota_id}.pdf: {e}")
         else:
-            print(f"📌 Arquivo já existe: {nota_id}.pdf")
+            print(f" Arquivo já existe: {nota_id}.pdf")
 
-# Execução
 if __name__ == "__main__":
     download_pdfs()

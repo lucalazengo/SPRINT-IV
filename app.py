@@ -1,82 +1,82 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+from consulta_jurisprudencia import ConsultaJurisprudencia
 import pandas as pd
-import numpy as np
-import faiss
 import pickle
-from sentence_transformers import SentenceTransformer
+import os
+from datetime import datetime
 
-# 🚀 Configuração do Flask
+# ✅ Inicialização do Flask e do Modelo
 app = Flask(__name__)
+consulta_gemini = ConsultaJurisprudencia()
 
-# 🚀 Carregar o modelo e os dados
-model = SentenceTransformer('all-mpnet-base-v2')
-dataset = pd.read_csv('./data/processed/DATASET_FINAL_EMBEDDINGS.csv')
+# ✅ Inicialização do Cache
+cache_file = 'cache_respostas.pkl'
+historico_csv = 'historico_consultas.csv'
 
-# 🚀 Carregar os embeddings e criar o índice
-with open('./data/processed/embeddings.pkl', 'rb') as f:
-    embeddings = pickle.load(f)
+# ✅ Verificação do arquivo de cache
+if os.path.exists(cache_file):
+    try:
+        with open(cache_file, 'rb') as f:
+            cache_respostas = pickle.load(f)
+    except EOFError:
+        print("⚠️ Arquivo de cache corrompido. Recriando...")
+        cache_respostas = {}
+else:
+    cache_respostas = {}
 
-# ✅ Corrigido: Nome alterado para evitar conflito com Flask
-embeddings = np.array(embeddings).astype('float32')
-faiss.normalize_L2(embeddings)
+# ✅ Função para salvar logs
+def salvar_log(pergunta, resposta, tempo_resposta):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_data = {
+        'Data': [timestamp],
+        'Pergunta': [pergunta],
+        'Resposta': [resposta],
+        'Tempo de Resposta (s)': [tempo_resposta]
+    }
 
-# ✅ Índice atualizado para evitar conflito de nome
-faiss_index = faiss.IndexFlatIP(embeddings.shape[1])
-faiss_index.add(embeddings)
+    # ✅ Salva no CSV de histórico
+    if not os.path.exists(historico_csv):
+        pd.DataFrame(log_data).to_csv(historico_csv, index=False)
+    else:
+        pd.DataFrame(log_data).to_csv(historico_csv, mode='a', header=False, index=False)
 
-print(f"✅ Índice de busca criado com {faiss_index.ntotal} jurisprudências indexadas.")
-
-# 🔎 Função de busca semântica
-def buscar_jurisprudencia(query, top_k=5):
-    query_embedding = model.encode([query], normalize_embeddings=True)
-    distances, indices = faiss_index.search(np.array(query_embedding).astype('float32'), top_k)
-    
-    resultados = []
-    for idx, score in zip(indices[0], distances[0]):
-        resultado = {
-            'diagnóstico': dataset.loc[idx, 'diagnóstico'],
-            'conclusão': dataset.loc[idx, 'conclusão'],
-            'conclusão justificada': dataset.loc[idx, 'conclusão justificada'],
-            'cid': dataset.loc[idx, 'cid'],
-            'princípio ativo': dataset.loc[idx, 'princípio ativo'],
-            'nome comercial': dataset.loc[idx, 'nome comercial'],
-            'tipo da tecnologia': dataset.loc[idx, 'tipo da tecnologia'],
-            'órgão': dataset.loc[idx, 'órgão'],
-            'serventia': dataset.loc[idx, 'serventia'],
-            'referência': dataset.loc[idx, 'link visualização'],
-            'similaridade': float(score)
-        }
-        resultados.append(resultado)
-    
-    return resultados
-
-# 🚀 Rota principal de busca
+# 🚀 Rota principal (Chat)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        query = request.form['query']
-        resultados = buscar_jurisprudencia(query)
-        return render_template('index.html', resultados=resultados, query=query)
-    return render_template('index.html')
+        pergunta = request.form['pergunta']
 
-# 🚀 Rota do Dashboard
-@app.route('/dashboard')
-def dashboard():
-    total_pareceres = len(dataset)
-    distribuicao_conclusao = dataset['conclusão justificada'].value_counts()
-    distribuicao_tecnologia = dataset['tipo da tecnologia'].value_counts()
-    principais_diagnosticos = dataset['diagnóstico'].value_counts().head(5)
-    principais_cidades = dataset['cidade'].value_counts().head(5)
-    principais_serventias = dataset['serventia'].value_counts().head(5)
+        # ✅ Verifica no Cache
+        if pergunta in cache_respostas:
+            resposta = cache_respostas[pergunta]
+            tempo_resposta = "Cache"
+            print("✅ Resposta recuperada do cache.")
+        else:
+            # ✅ Executa a consulta
+            tempo_inicio = datetime.now()
+            resposta = consulta_gemini.consultar(pergunta)
+            tempo_fim = datetime.now()
+            tempo_resposta = (tempo_fim - tempo_inicio).total_seconds()
 
-    return render_template('dashboard.html',
-                           total_pareceres=total_pareceres,
-                           distribuicao_conclusao=distribuicao_conclusao,
-                           distribuicao_tecnologia=distribuicao_tecnologia,
-                           principais_diagnosticos=principais_diagnosticos,
-                           principais_cidades=principais_cidades,
-                           principais_serventias=principais_serventias)
-                           
+            # ✅ Adiciona ao cache
+            cache_respostas[pergunta] = resposta
+            with open(cache_file, 'wb') as f:
+                pickle.dump(cache_respostas, f)
+
+            # ✅ Salva no log e auditoria
+            salvar_log(pergunta, resposta, tempo_resposta)
+        
+        return render_template('index.html', pergunta=pergunta, resposta=resposta, historico=cache_respostas)
+    return render_template('index.html', historico=cache_respostas)
+
+# 🚀 Rota para o Histórico Completo
+@app.route('/historico')
+def historico_page():
+    if os.path.exists(historico_csv):
+        historico = pd.read_csv(historico_csv)
+        return render_template('historico.html', historico=historico.to_dict(orient='records'))
+    return render_template('historico.html', historico=[])
+
 # 🚀 Executar o app
 if __name__ == '__main__':
     app.run(debug=True)

@@ -104,7 +104,6 @@ class ENatjusScraper:
         self.driver.quit()
         logging.info("Processo finalizado com sucesso!")
         
-# Execução
 if __name__ == "__main__":
     scraper = ENatjusScraper()
     scraper.executar()
