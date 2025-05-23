@@ -74,7 +74,7 @@ class SemanticSearcher:
             import traceback; traceback.print_exc()
             self.is_ready = False
 
-    def search(self, query, top_k=3):
+    def search(self, query, top_k=5):
         if not self.is_ready or self.model is None or self.index is None or self.dataset is None:
             print(" Semantic Search Service: Não está pronto ou recursos não carregados.")
             return []

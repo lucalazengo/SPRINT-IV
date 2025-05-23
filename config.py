@@ -16,7 +16,7 @@ DATASET_PATH = os.path.join(DATA_DIR, DATASET_FILENAME)
 EMBEDDINGS_PATH = os.path.join(DATA_DIR, EMBEDDINGS_FILENAME)
 
 
-GOOGLE_CREDENTIALS_PATH = r"c:/Users/mlzengo/Documents/TJGO/SPRINT IV/br-tjgo-cld-02-09b1b22e65b3.json" 
+GOOGLE_CREDENTIALS_PATH = r"/home/lucala/Residencia TJGO/tjgo/NLP/ENTREGAS FINAL/juris_natjus/SPRINT-IV/secrets/br-tjgo-cld-02-09b1b22e65b3.json" 
 GOOGLE_PROJECT_ID = "br-tjgo-cld-02"
 GOOGLE_LOCATION = "us-central1"
 

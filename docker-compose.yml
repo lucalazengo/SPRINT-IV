@@ -8,6 +8,6 @@ services:
     ports:
       - "5000:5000" 
     volumes:
-      - ./secrets/dsadf_12344.json:/app/secrets/gcp_key.json:ro      
+      - ./secrets/chave.json:/app/secrets/gcp_key.json:ro      
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/app/secrets/gcp_key.json
